@@ -3,15 +3,15 @@ use 3i_in10;
 
 -- Création de la table "pizzas", qui contiendra l'ensemble des pizzas disponibles au menu
 CREATE TABLE IF NOT EXISTS pizzas (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(50) NOT NULL,
+    id INT PRIMARY KEY UNIQUE,
+    name VARCHAR(50) NOT NULL UNIQUE,
     base_price DECIMAL(10,2) NOT NULL
 );
 
 -- Création de la table "ingredients" qui contiendra l'ensemble des ingrédients pouvant faire parti d'une pizza
 CREATE TABLE IF NOT EXISTS ingredients (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(50) NOT NULL
+    id INT PRIMARY KEY UNIQUE,
+    name VARCHAR(50) NOT NULL UNIQUE
 );
 
 -- Création d'une table de liaison "pizza_ingredients" permettant d'associer les pizzas à leurs ingrédients
@@ -27,8 +27,8 @@ CREATE TABLE IF NOT EXISTS pizza_ingredients (
 
 -- Création de la table "sizes" qui contiendra l'ensemble des tailles de pizzas disponibles
 CREATE TABLE IF NOT EXISTS sizes (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(50) NOT NULL,
+    id INT PRIMARY KEY UNIQUE,
+    name VARCHAR(50) NOT NULL UNIQUE,
     price_ratio DECIMAL(10,2) NOT NULL
 );
 
@@ -44,8 +44,9 @@ CREATE TABLE IF NOT EXISTS clients (
     id INT PRIMARY KEY AUTO_INCREMENT,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
-    mail VARCHAR(255) NOT NULL,
+    mail VARCHAR(255) NOT NULL UNIQUE, -- Contrainte d'unicité pour être sûr qu'un même client ne s'est pas enregistré 2 fois avec le même mail
     balance DECIMAL(10,2) DEFAULT 0.00, -- On met le solde par défaut à 0.00 €
+    offered_count INT DEFAULT 0, -- Nombre de pizzas offertes
     total_orders INT DEFAULT 0 -- On met le nombre de commande par défaut à 0
 );
 
@@ -61,6 +62,8 @@ CREATE TABLE IF NOT EXISTS orders (
     id INT PRIMARY KEY AUTO_INCREMENT,
     client_id INT NOT NULL,
     pizza_id INT NOT NULL,
+    size_id INT NOT NULL,
+    amount DECIMAL(10, 2),
     driver_id INT,
     vehicle_id INT,
     status ENUM('En cours','Livré', 'Annulé') DEFAULT 'En cours',
@@ -68,6 +71,20 @@ CREATE TABLE IF NOT EXISTS orders (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Permet de récupérer l'heure à laquelle la commande a été livrée. Elle enregistre aussi l'heure à laquelle la commande est annulée et créée mais c'est moins utile
     FOREIGN KEY (client_id) REFERENCES clients(id),
     FOREIGN KEY (pizza_id) REFERENCES pizzas(id),
+    FOREIGN KEY (size_id) REFERENCES sizes(id),
     FOREIGN KEY (driver_id) REFERENCES drivers(id),
     FOREIGN KEY (vehicle_id) REFERENCES vehicles(id)
 );
+
+CREATE TRIGGER update_order_amount
+BEFORE INSERT ON orders
+FOR EACH ROW
+    SET NEW.amount = (
+        SELECT base_price
+        FROM pizzas
+        WHERE id = NEW.pizza_id
+    ) * (
+        SELECT price_ratio
+        FROM sizes
+        WHERE id = NEW.size_id
+    );
