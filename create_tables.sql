@@ -3,23 +3,24 @@ use 3i_in10;
 
 -- Création de la table "pizzas", qui contiendra l'ensemble des pizzas disponibles au menu
 CREATE TABLE IF NOT EXISTS pizzas (
-    id INT PRIMARY KEY UNIQUE,
+    id INT PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE,
     base_price DECIMAL(10,2) NOT NULL
 );
 
 -- Création de la table "ingredients" qui contiendra l'ensemble des ingrédients pouvant faire parti d'une pizza
 CREATE TABLE IF NOT EXISTS ingredients (
-    id INT PRIMARY KEY UNIQUE,
+    id INT PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE
 );
 
 -- Création d'une table de liaison "pizza_ingredients" permettant d'associer les pizzas à leurs ingrédients
 CREATE TABLE IF NOT EXISTS pizza_ingredients (
+    id INT AUTO_INCREMENT,
     pizza_id INT NOT NULL,
     ingredient_id INT NOT NULL,
     -- On s'assure en assignant la clé primaire aux deux colonnes "pizza_id" et "ingredient_id" que chaque combinaison pizza/ingredient est unique dans la table
-    PRIMARY KEY (pizza_id, ingredient_id),
+    UNIQUE (pizza_id, ingredient_id),
     -- On assigne les clés étrangères, provenant des tables "pizzas" et "ingredients"
     FOREIGN KEY (pizza_id) REFERENCES pizzas(id),
     FOREIGN KEY (ingredient_id) REFERENCES ingredients(id)
@@ -27,7 +28,7 @@ CREATE TABLE IF NOT EXISTS pizza_ingredients (
 
 -- Création de la table "sizes" qui contiendra l'ensemble des tailles de pizzas disponibles
 CREATE TABLE IF NOT EXISTS sizes (
-    id INT PRIMARY KEY UNIQUE,
+    id INT PRIMARY KEY,
     name VARCHAR(50) NOT NULL UNIQUE,
     price_ratio DECIMAL(10,2) NOT NULL
 );
@@ -88,3 +89,4 @@ FOR EACH ROW
         FROM sizes
         WHERE id = NEW.size_id
     );
+
