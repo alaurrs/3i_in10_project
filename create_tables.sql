@@ -1,6 +1,8 @@
 -- Utilisation de la BDD "3i_in10"
 use 3i_in10;
 
+ALTER DATABASE 3i_in10 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- Création de la table "pizzas", qui contiendra l'ensemble des pizzas disponibles au menu
 CREATE TABLE IF NOT EXISTS pizzas (
     id INT PRIMARY KEY,
@@ -98,3 +100,13 @@ FOR EACH ROW
         FROM sizes
         WHERE id = NEW.size_id
     );
+
+-- Routines
+-- Calculer la moyenne des commandes
+DELIMITER $$
+CREATE PROCEDURE get_orders_average() 
+BEGIN
+    SELECT AVG(amount) FROM orders;
+END $$
+DELIMITER ;
+
