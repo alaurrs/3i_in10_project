@@ -2,26 +2,26 @@
 use 3i_in10;
 
 -- Insertion client
-INSERT INTO clients (first_name, last_name, mail)
-VALUES ('Sallyvann', 'ANGE', 'sallyvann.ange@edu.esiee.fr');
+INSERT INTO clients (first_name, last_name, mail, password)
+VALUES ('Sallyvann', 'ANGE', 'sallyvann.ange@edu.esiee.fr', 'test');
 -- On insère un client avec le même nom et prénom, mais différent mail
-INSERT INTO clients (first_name, last_name, mail)
-VALUES ('Sallyvann', 'ANGE', 'sallyvannange@gmail.com');
+INSERT INTO clients (first_name, last_name, mail, password)
+VALUES ('Sallyvann', 'ANGE', 'sallyvannange@gmail.com', 'test');
 -- On insère un autre client
-INSERT INTO clients (first_name, last_name, mail)
-VALUES ('Guillaume', 'Mulier', 'guillaume.mulier@edu.esiee.fr');
+INSERT INTO clients (first_name, last_name, mail, password)
+VALUES ('Guillaume', 'Mulier', 'guillaume.mulier@edu.esiee.fr', 'test');
 -- On insère un client avec un solde de 200 euros
-INSERT INTO clients (first_name, last_name, mail, balance)
-VALUES ('Térence', 'Barbotin', 'terence.barbotin@edu.esiee.fr', 200.00);
+INSERT INTO clients (first_name, last_name, mail, password, balance)
+VALUES ('Térence', 'Barbotin', 'terence.barbotin@edu.esiee.fr', 'test', 200.00);
 -- On insère un client avec un total de 10 commandes et un solde de 0 euros
-INSERT INTO clients (first_name, last_name, mail, offered_count, total_orders)
-VALUES ('Minh-Thanh', 'Nguyen', 'minh-thanh.nguyen@edu.esiee.fr', 1, 10);
+INSERT INTO clients (first_name, last_name, mail, password, offered_count, total_orders)
+VALUES ('Minh-Thanh', 'Nguyen', 'minh-thanh.nguyen@edu.esiee.fr', 'test', 1, 10);
 -- On insère un client avec un total de 23 commandes et un solde de 0 euros - il n'a jamais utilisé ses pizzas offertes
-INSERT INTO clients (first_name, last_name, mail, offered_count, total_orders)
-VALUES ('Pierre', 'Lefebvre', 'pierre.lefebvre@esiee.fr', 2, 23);
+INSERT INTO clients (first_name, last_name, mail, password, offered_count, total_orders)
+VALUES ('Pierre', 'Lefebvre', 'pierre.lefebvre@esiee.fr', 'test', 2, 9);
 -- On insère un client avec un total de 13 commandes et un solde de 34,56 euros - il n'a jamais utilisé ses pizzas offertes
-INSERT INTO clients (first_name, last_name, mail, balance, offered_count, total_orders)
-VALUES ('Karim', 'Ali', 'karim.ali@edu.esiee.fr', 34.56, 1, 13);
+INSERT INTO clients (first_name, last_name, mail, password, balance, offered_count, total_orders)
+VALUES ('Karim', 'Ali', 'karim.ali@edu.esiee.fr', 'test', 34.56, 1, 2);
 
 -- Insertion Ingrédients
 INSERT INTO ingredients (id, name)

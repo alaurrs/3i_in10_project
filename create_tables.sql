@@ -16,7 +16,6 @@ CREATE TABLE IF NOT EXISTS ingredients (
 
 -- Création d'une table de liaison "pizza_ingredients" permettant d'associer les pizzas à leurs ingrédients
 CREATE TABLE IF NOT EXISTS pizza_ingredients (
-    id INT AUTO_INCREMENT,
     pizza_id INT NOT NULL,
     ingredient_id INT NOT NULL,
     -- On s'assure en assignant la clé primaire aux deux colonnes "pizza_id" et "ingredient_id" que chaque combinaison pizza/ingredient est unique dans la table
@@ -48,7 +47,17 @@ CREATE TABLE IF NOT EXISTS clients (
     mail VARCHAR(255) NOT NULL UNIQUE, -- Contrainte d'unicité pour être sûr qu'un même client ne s'est pas enregistré 2 fois avec le même mail
     balance DECIMAL(10,2) DEFAULT 0.00, -- On met le solde par défaut à 0.00 €
     offered_count INT DEFAULT 0, -- Nombre de pizzas offertes
-    total_orders INT DEFAULT 0 -- On met le nombre de commande par défaut à 0
+    total_orders INT DEFAULT 0, -- On met le nombre de commande par défaut à 0
+    password VARCHAR(255) NOT NULL -- Mdp utilisateur
+);
+
+-- Création de la table "admins" qui permettra de stocker les utilisateurs ayant les habilités nécessaires pour gérer les commandes, voir les utilisateurs, etc.
+CREATE TABLE IF NOT EXISTS admins (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    mail VARCHAR(255) NOT NULL UNIQUE, -- Contrainte d'unicité pour être sûr qu'un même admin ne s'est pas enregistré 2 fois avec le même mail
+    password VARCHAR(255) NOT NULL -- Mdp admin
 );
 
 -- Création de la table "drivers" qui stockera des informations sur les livreurs
@@ -89,4 +98,3 @@ FOR EACH ROW
         FROM sizes
         WHERE id = NEW.size_id
     );
-
