@@ -107,6 +107,26 @@ BEFORE UPDATE ON orders
 FOR EACH ROW
     SET NEW.updated_at = CURRENT_TIMESTAMP;
 
+-- Créé un trigger qui vérifie le retard de livraison après une mise à jour de la table orders. Si le délai dépasse 30 min, la commande est gratuite et le compte du client est recrédité.
+DELIMITER $$
+CREATE TRIGGER update_order_amount_at_delay
+BEFORE UPDATE ON orders
+FOR EACH ROW
+BEGIN
+    IF TIMESTAMPDIFF(MINUTE, OLD.updated_at, NEW.updated_at) > 30 THEN
+        -- Mettre à jour le montant de la commande à 0
+        SET NEW.amount = 0;
+        
+        -- Recréditer le compte du client
+        UPDATE clients 
+        SET balance = balance + (SELECT amount FROM orders WHERE id = NEW.id)
+        WHERE id = (SELECT client_id FROM orders WHERE id = NEW.id);
+    END IF;
+END$$
+DELIMITER ;
+
+
+
 -- Routines
 -- Obtenir les ingrédients composant une pizza
 DELIMITER $$
@@ -247,4 +267,44 @@ BEGIN
         WHERE vehicle_id IS NOT NULL
     );
 END $$
+DELIMITER ;
+
+-- Récupérer le chiffre d'affaire 
+DELIMITER $$
+CREATE PROCEDURE get_turnover()
+BEGIN
+    SELECT SUM(amount) as turnover
+    FROM orders
+    WHERE status IN ('En cours', 'Validé');
+END $$
+DELIMITER ;
+
+-- Récupérer le retard éventuel d'une commande (si la différence entre orders.created_at et orders.updated_at > 30 minutes)
+DELIMITER $$
+CREATE PROCEDURE get_drivers_by_delivery_delay()
+BEGIN
+    SELECT d.id, COUNT(*) AS delivery_delays
+    FROM drivers d
+    JOIN orders o ON o.driver_id = d.id
+    WHERE TIMEDIFF(o.updated_at, o.created_at) > '00:30:00' AND o.status = 'Livré'
+    GROUP BY d.id
+    ORDER BY delivery_delays DESC;
+END $$
+DELIMITER ;
+-- Récupérer le retard éventuel d'une commande (si la différence entre orders.created_at et orders.updated_at > 30 minutes)
+DELIMITER $$
+
+CREATE PROCEDURE get_delay_from_order(IN order_id INT)
+BEGIN
+    DECLARE delay_duration TIME;
+    
+    SELECT TIMEDIFF(updated_at, created_at) INTO delay_duration
+    FROM orders
+    WHERE id = order_id
+    ORDER BY created_at DESC
+    LIMIT 1;
+    
+    SELECT IF(delay_duration > '00:30:00', delay_duration, NULL) AS delay;
+END $$
+
 DELIMITER ;
