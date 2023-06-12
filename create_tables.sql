@@ -275,7 +275,7 @@ CREATE PROCEDURE get_turnover()
 BEGIN
     SELECT SUM(amount) as turnover
     FROM orders
-    WHERE status IN ('En cours', 'Validé');
+    WHERE status IN ('En cours', 'Livré');
 END $$
 DELIMITER ;
 
